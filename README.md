@@ -8,7 +8,7 @@
 2. Now in first account (assume sender), complete the [login](https://bocsdemo.pythonanywhere.com/login) and then you will see some empty cheques present in the dashboard, fill the receiver name properly (same as the one signed up).
 3. Enter all the other details which are asked and then click on send to receiver. (for now enter any value in decryption key)
 4. Open the receiver account and there will a cheque shown in the Receiver Cheques section. 
-5. Click on send to bank to send the cheque to bank for processing.
+5. Click on send to bank to send the cheque to bank for processing :moneybag:
 
 ### Banking
 
@@ -45,3 +45,19 @@ localhost/login<br>
 localhost/dashboard<br>
 localhost/otp<br>
 ```
+
+## Digital Cheque
+
+Additionally, there is code which converts form to a digital cheque.
+
+### Run digital cheque demo
+
+Start XAMPP Server and move the "digi_cheque" folder in htdocs.
+
+Run ```form.php```
+
+The cheque PDF will be generated one like below.
+
+![Demo Cheque](cheque_demo.png)
+
+The cheque can be further committed further to secure file Blockchain systems such as IPFS :money_with_wings:.
