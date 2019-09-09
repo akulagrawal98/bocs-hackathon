@@ -40,10 +40,10 @@ $ python flask_app.py
 Access the app by
 
 ```
-localhost/signup<br>
-localhost/login<br>
-localhost/dashboard<br>
-localhost/otp<br>
+localhost/signup
+localhost/login
+localhost/dashboard
+localhost/otp
 ```
 
 ## Digital Cheque
