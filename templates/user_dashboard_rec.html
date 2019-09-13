@@ -72,7 +72,25 @@
 			</button>
 			{% endif %}
 		  </div>
+		  {% if qr_list[i][0] == ch_id %}
+		  <div id="collapse{{i}}" aria-labelledby="heading{{i}}" data-parent="#accordionExample">
+				<div>
+						{% if receiver_val == true %}
+							<label style="visibility: hidden"></label>	
+						{% else %}
+							<label style="color: red">Please enter valid name of receiver.</label>
+						{% endif %}
+					</div>
+					<div>
+						{% if bal_flag == true %}
+							<label style="visibility: hidden"></label>	
+						{% else %}
+							<label style="color: red">Please enter appropriate amount.</label>
+						{% endif %}
+					</div>
+		  {% else %}
 		  <div id="collapse{{i}}" class="collapse" aria-labelledby="heading{{i}}" data-parent="#accordionExample">
+		  {% endif %}
 			  <div class="card-body">
 			    <img align="right" src="{{qr_img[i]}}" width=150px height=150px>
 
@@ -102,7 +120,9 @@
 						<input type="text" class="form-control" id="key" placeholder="Decryption Key" name="dec" required>
 						</div>
 				  	</div>
-				  	<br>
+					  <br>
+					
+	
 				  	<div class="form-row">
 				  		<div class="col-3">
 				  		<button type="submit" class="btn btn-primary btn-block">Send to Receiver</button>

@@ -41,7 +41,18 @@
 				  	</div>
 				  	<div class="col-6">
 				  		<input type="text" class="form-control" name="phoneno" placeholder="Phone">
-				  	</div>
+					  </div>
+					  {% if visibil == 0 %}
+					  <div>
+						  <label style="visibility:hidden"></label>
+					  </div>
+					  {% endif %}
+					  {% if visibil == 1 %}
+					  <div>
+						  <label style="color:red">Enter proper details</label>
+					  </div>
+					  {% endif %}
+					  
 				  </div><center>
 				  <small id="emailHelp" class="form-text text-muted">Already have account? <a href="login">Login</a></small>
 				</center>

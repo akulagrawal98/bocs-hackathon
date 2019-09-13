@@ -176,12 +176,13 @@ def login_detail():
 		try:
 			cur=get_db().cursor()
 			cur.execute('select * from client where full_name=? and password=?',(ac_name,password))
-			temp=cur.fetchone()
+			temp = cur.fetchone()
 			try:
-				# length=len(temp)
-				# print("I am here!!!!!!!!!!!!!",length)
+				length=len(temp)
+				print("I am here!!!!!!!!!!!!!",length)
 				return redirect(url_for('user_dashboard',ac_no=ac_name))
-			except:
+			except Exception as e:
+				print (e)
 				return render_template('login_page.html')
 		except:
 			return render_template('login_page.html')
@@ -197,7 +198,7 @@ def signup_detail():
 		phone=int(request.form['phoneno'])
 		try:
 			cur=get_db().cursor()
-			cur.execute('insert into client values(?,?,?,?,5000,?)',(account_no,first,email_id,phone,password))
+			cur.execute('insert into client values(?,?,?,?,50000,?)',(account_no,first,email_id,phone,password))
 			get_db().commit()
 
 			#Create initial cheques for users HERE
@@ -206,12 +207,17 @@ def signup_detail():
 
 			return redirect(url_for('login_detail'))
 		except:
-			return render_template('signup_page.html')
-	return render_template('signup_page.html')
+			vis = 'visible'
+			return render_template('signup_page.html',visibil=1)
+		vis = 'hidden'
+	return render_template('signup_page.html',visibil=0)
 
 @app.route('/<ac_no>',methods=["POST","GET"])
 def user_dashboard(ac_no):
-	if(request.method=='POST'):
+	receiver_val = True
+	bal_flag = True
+	qr_id = 0
+	if(request.method=='POST'):	
 		form_type=request.form['form_type']
 		if(form_type=="send_cheque_to_client"):
 			qr_id=int(request.form['qr_id'])
@@ -224,10 +230,25 @@ def user_dashboard(ac_no):
 			try:
 				cur=get_db().cursor()
 				print("I AM INSERTING!!!!!!!!")
-				cur.execute('insert into sent_cheque (qr_id,sender_name,receiver_name,dated,amount,sent_to_bank) values(?,?,?,?,?,0)',(qr_id,sender_name,receiver_name,date,amount))
-				get_db().commit()
-				cur.execute('update user_qr set status=? where qr_id=?',("sent",qr_id))
-				get_db().commit()
+				print (receiver_name)
+				c = cur.execute('select * from client where full_name=?',((receiver_name),)).fetchall()
+				bal = cur.execute('select * from client where full_name=?',((sender_name),)).fetchall()
+				balance = bal[0][4]
+				print (balance)
+				if (len(c)>0 and balance>amount):
+					
+					cur.execute('insert into sent_cheque (qr_id,sender_name,receiver_name,dated,amount,sent_to_bank) values(?,?,?,?,?,0)',(qr_id,sender_name,receiver_name,date,amount))
+					get_db().commit()
+					cur.execute('update user_qr set status=? where qr_id=?',("sent",qr_id))
+					get_db().commit()
+				else:
+					print ("h")
+					print (balance)
+					print (amount) 
+					if balance<amount:
+						bal_flag = False
+					else: 
+						receiver_val = False
 
 				# return "Wow"
 			except Error as e:
@@ -289,20 +310,24 @@ def user_dashboard(ac_no):
 					available+=1
 				else:
 					sent+=1
+			print("Current QR ",qr_id)
 			print("QR code Image",qr_img)
+			print("QR List ",qr_list)
 			# print("QR status",qr_status)
 			print("Receiver_dic",rec_dict)
 			print("I am here")
+			# print ("Bal : {0}".format(bal_flag))
 			if(len(sent_dict)==0 and len(rec_dict)==0):
 				# return "OKAYYY"
 				return render_template('user_dashboard1.html',available_count=available,sent_count=sent,user=user_detail,qr_img=qr_img,qr_list=qr_list,qr_status=qr_status,file_error=True)
 			elif(len(sent_dict)!=0 and len(rec_dict)==0):
-				return render_template('user_dashboard.html',sent_cheque=sent_dict,available_count=available,sent_count=sent,user=user_detail,qr_img=qr_img,qr_list=qr_list,qr_status=qr_status,file_error=True)
+				return render_template('user_dashboard.html',sent_cheque=sent_dict,available_count=available,sent_count=sent,user=user_detail,qr_img=qr_img,qr_list=qr_list,qr_status=qr_status,file_error=True, bal_flag=bal_flag, receiver_val=receiver_val, ch_id=qr_id)
 			elif(len(sent_dict)!=0 and len(rec_dict)!=0):
-				return render_template('user_dashboard_rec.html',rec_id=rec_id,rec_cheque=rec_dict,sent_cheque=sent_dict,available_count=available,sent_count=sent,user=user_detail,qr_img=qr_img,qr_list=qr_list,qr_status=qr_status,file_error=True)
+				return render_template('user_dashboard_rec.html',rec_id=rec_id,rec_cheque=rec_dict,sent_cheque=sent_dict,available_count=available,sent_count=sent,user=user_detail,qr_img=qr_img,qr_list=qr_list,qr_status=qr_status,file_error=True, bal_flag=bal_flag, receiver_val=receiver_val, ch_id=qr_id)
 			elif(len(sent_dict)==0 and len(rec_dict)!=0):
 				return render_template('user_dashboard_rec_only.html',rec_id=rec_id,rec_cheque=rec_dict,available_count=available,sent_count=sent,user=user_detail,qr_img=qr_img,qr_list=qr_list,qr_status=qr_status,file_error=True)
-		except:
+		except Exception as e:
+			print (e) 
 			return "User Not Found"
 	except:
 		return "No User Found"
